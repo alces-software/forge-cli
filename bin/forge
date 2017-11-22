@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
-require_relative '../lib/alces/forge/cli'
+$:.unshift File.join(File.expand_path('..', File.dirname(__FILE__)), 'lib')
+
+require 'alces/forge/cli'
 
 Alces::Forge::CLI.new.run
