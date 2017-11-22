@@ -1,15 +1,33 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    addressable (2.5.2)
+      public_suffix (>= 2.0.2, < 4.0)
     commander (4.4.3)
       highline (~> 1.7.2)
+    domain_name (0.5.20170404)
+      unf (>= 0.0.5, < 1.0.0)
     highline (1.7.8)
+    http (3.0.0)
+      addressable (~> 2.3)
+      http-cookie (~> 1.0)
+      http-form_data (>= 2.0.0.pre.pre2, < 3)
+      http_parser.rb (~> 0.6.0)
+    http-cookie (1.0.3)
+      domain_name (~> 0.5)
+    http-form_data (2.0.0)
+    http_parser.rb (0.6.0)
+    public_suffix (3.0.1)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.7.4)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   commander
+  http
 
 BUNDLED WITH
    1.15.1

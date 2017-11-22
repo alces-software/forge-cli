@@ -2,6 +2,7 @@
 
 $:.unshift File.join(File.expand_path('..', File.dirname(__FILE__)), 'lib')
 
+require 'bundler/setup'
 require 'alces/forge/cli'
 
 Alces::Forge::CLI.new.run
