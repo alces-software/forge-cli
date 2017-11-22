@@ -1,4 +1,5 @@
 require 'http'
+require 'json'
 
 module Alces
   module Forge
@@ -12,8 +13,8 @@ module Alces
         end
       end
 
-      def get(endpoint)
-        http.get("#{@base_url}/#{endpoint}")
+      def get(endpoint, *kwargs)
+        JSON.parse(http.get("#{@base_url}/#{endpoint}", *kwargs).to_s)
       end
 
       private

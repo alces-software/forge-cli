@@ -5,5 +5,6 @@
 #==============================================================================
 source 'http://rubygems.org'
 
+gem 'colorize'
 gem 'commander'
 gem 'http'
