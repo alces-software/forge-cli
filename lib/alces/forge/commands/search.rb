@@ -1,13 +1,12 @@
-require 'alces/forge/api'
+require 'alces/forge/commands/command_base'
 require 'colorize'
 
 module Alces
   module Forge
     module Commands
-      class Search
+      class Search < CommandBase
         def search(args, options)
-          @api = ::Alces::Forge::API.new
-          results = @api.get('search', params: {:q => args[0]} )
+          results = api.get('search', params: {:q => args[0]} )
           print_packages_list(results['packages'])
         end
 

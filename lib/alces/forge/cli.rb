@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'commander'
+require 'alces/forge/commands/install'
 require 'alces/forge/commands/search'
 
 module Alces
@@ -21,14 +22,12 @@ module Alces
         end
 
         command :install do |c|
-          c.syntax = 'forge install [options]'
-          c.summary = ''
-          c.description = ''
-          c.example 'description', 'command example'
-          c.option '--some-switch', 'Some switch that does something'
-          c.action do |args, options|
-            # Do something or c.when_called Forge::Commands::Install
-          end
+          c.syntax = 'forge install [options] user/package[/version]'
+          c.summary = 'Install a Forge package'
+          c.description = 'Download and install a Forge package.'
+          c.example 'Install latest version of a package', 'alces forge install alces/somepackage'
+          c.example 'Install a specific version of a package', 'alces forge install alces/somepackage/1.0.2'
+          c.action ::Alces::Forge::Commands::Install, :install
         end
 
         run!
