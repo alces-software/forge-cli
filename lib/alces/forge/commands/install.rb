@@ -1,4 +1,8 @@
 require 'alces/forge/commands/command_base'
+require 'http'
+require 'open3'
+require 'tempfile'
+require 'zip'
 
 module Alces
   module Forge
@@ -12,6 +16,17 @@ module Alces
           raise "No package found for #{args[0]}" unless metadata
 
           puts "Found package: #{metadata['attributes']['name']} version #{metadata['attributes']['version']}"
+
+          package = download_package(metadata['attributes']['packageUrl'])
+
+          extracted_dir = extract_package(package)
+
+          result = run_installer(extracted_dir)
+
+          puts "Installed OK? #{result}"
+
+          package.unlink
+          FileUtils.remove_entry(extracted_dir)
 
         end
 
@@ -41,6 +56,44 @@ module Alces
           end
 
           api.get('packages', params: params)['data'].first
+        end
+
+        def download_package(url)
+          temp = Tempfile.new('forge-dl')
+          temp.binmode
+          body = HTTP.get(url).body
+          while (part = body.readpartial) do
+            temp.write(part)
+          end
+          temp.close
+          temp
+        end
+
+        def extract_package(package_file)
+          dest = Dir.mktmpdir('forge-install')
+
+          puts "Unzipping #{package_file.path}"
+          Zip::File.open(package_file.path) do |zip_file|
+            zip_file.each do |entry|
+              puts "Extracting #{entry} to #{dest}"
+              entry.extract(File.join(dest, entry.name))
+            end
+          end
+
+          dest
+        end
+
+        def run_installer(dir)
+          old_pwd = Dir.pwd
+
+          Dir.chdir(dir)
+          puts "Changed to #{Dir.pwd}"
+          File.chmod(0700, 'install.sh')
+          stdout, status = ::Open3.capture2('./install.sh')
+
+          Dir.chdir(old_pwd)
+
+          status.success?
         end
       end
     end
