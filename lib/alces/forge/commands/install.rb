@@ -1,4 +1,6 @@
+require 'alces/forge/cli_utils'
 require 'alces/forge/commands/command_base'
+require 'forwardable'
 require 'http'
 require 'open3'
 require 'tempfile'
@@ -8,6 +10,10 @@ module Alces
   module Forge
     module Commands
       class Install < CommandBase
+
+        extend Forwardable
+        def_delegators CLIUtils, :doing, :say, :with_spinner
+
         def install(args, options)
           package_props = split_package_path(args[0])
 
@@ -15,15 +21,13 @@ module Alces
 
           raise "No package found for #{args[0]}" unless metadata
 
-          puts "Found package: #{metadata['attributes']['name']} version #{metadata['attributes']['version']}"
+          puts "Found package: #{metadata['attributes']['name'].bold} version #{metadata['attributes']['version'].bold}"
 
           package = download_package(metadata['attributes']['packageUrl'])
 
           extracted_dir = extract_package(package)
 
-          result = run_installer(extracted_dir)
-
-          puts "Installed OK? #{result}"
+          run_installer(extracted_dir)
 
           package.unlink
           FileUtils.remove_entry(extracted_dir)
@@ -61,39 +65,56 @@ module Alces
         def download_package(url)
           temp = Tempfile.new('forge-dl')
           temp.binmode
-          body = HTTP.get(url).body
-          while (part = body.readpartial) do
-            temp.write(part)
+          doing 'Downloading'
+          with_spinner do
+            body = HTTP.get(url).body
+            while (part = body.readpartial) do
+              temp.write(part)
+            end
+            temp.close
           end
-          temp.close
+          say 'Done'.green
           temp
         end
 
         def extract_package(package_file)
           dest = Dir.mktmpdir('forge-install')
 
-          puts "Unzipping #{package_file.path}"
-          Zip::File.open(package_file.path) do |zip_file|
-            zip_file.each do |entry|
-              puts "Extracting #{entry} to #{dest}"
-              entry.extract(File.join(dest, entry.name))
+          doing 'Extracting'
+          with_spinner do
+            Zip::File.open(package_file.path) do |zip_file|
+              zip_file.each do |entry|
+                entry.extract(File.join(dest, entry.name))
+              end
             end
           end
+          say 'Done'.green
 
           dest
         end
 
         def run_installer(dir)
           old_pwd = Dir.pwd
+          stdout, stderr, status = nil
 
-          Dir.chdir(dir)
-          puts "Changed to #{Dir.pwd}"
-          File.chmod(0700, 'install.sh')
-          stdout, status = ::Open3.capture2('./install.sh')
+          doing 'Installing'
+          with_spinner do
+            Dir.chdir(dir)
 
-          Dir.chdir(old_pwd)
+            File.chmod(0700, 'install.sh')
+            stdout, stderr, status = ::Open3.capture3('./install.sh')
 
-          status.success?
+            Dir.chdir(old_pwd)
+          end
+
+          if status.success?
+            say 'Done'.green
+          else
+            say 'Failed'.red
+            puts stderr
+          end
+
+          status
         end
       end
     end
