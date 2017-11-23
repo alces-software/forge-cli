@@ -6,10 +6,10 @@ module Alces
     class API
 
       def initialize
-        if ENV['FORGE_API_URL']
-          @base_url = ENV['FORGE_API_URL'].chomp('/')
+        if ENV['cw_FORGE_API_URL']
+          @base_url = ENV['cw_FORGE_API_URL'].chomp('/')
         else
-         raise 'No URL specified for Forge API. Please specify FORGE_API_URL environment variable'
+         raise 'No URL specified for Forge API. Please specify cw_FORGE_API_URL environment variable'
         end
       end
 
