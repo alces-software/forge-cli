@@ -71,15 +71,7 @@ module Alces
         end
 
         def shell(cmd, working_dir=nil)
-          old_pwd = Dir.pwd
-
-          if working_dir
-            Dir.chdir(working_dir)
-          end
-
-          stdout, stderr, status = ::Open3.capture3(cmd)
-
-          Dir.chdir(old_pwd)
+          stdout, stderr, status = ::Open3.capture3(cmd, :chdir=>working_dir)
 
           unless status.success?
             raise ShellException.new(stderr)
