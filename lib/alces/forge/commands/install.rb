@@ -4,24 +4,24 @@ require 'forwardable'
 require 'http'
 require 'open3'
 require 'tempfile'
-require 'zip'
 
 module Alces
   module Forge
     module Commands
+
       class Install < CommandBase
 
         extend Forwardable
-        def_delegators CLIUtils, :doing, :say, :with_spinner
+        def_delegators CLIUtils, :doing, :do_with_spinner, :say, :shell
 
         def install(args, options)
           package_props = split_package_path(args[0])
 
           metadata = get_package_metadata(package_props[:user], package_props[:package], package_props[:version])
 
-          raise "No package found for #{args[0]}" unless metadata
+          say "No package found for #{args[0]}" unless metadata
 
-          puts "Found package: #{metadata['attributes']['name'].bold} version #{metadata['attributes']['version'].bold}"
+          say "Found package: #{metadata['attributes']['name'].bold} version #{metadata['attributes']['version'].bold}"
 
           package = download_package(metadata['attributes']['packageUrl'])
 
@@ -65,57 +65,44 @@ module Alces
         def download_package(url)
           temp = Tempfile.new('forge-dl')
           temp.binmode
-          doing 'Downloading'
-          with_spinner do
+          do_with_spinner 'Downloading' do
             body = HTTP.get(url).body
             while (part = body.readpartial) do
               temp.write(part)
             end
             temp.close
           end
-          say 'Done'.green
           temp
         end
 
         def extract_package(package_file)
           dest = Dir.mktmpdir('forge-install')
 
-          doing 'Extracting'
-          with_spinner do
-            Zip::File.open(package_file.path) do |zip_file|
-              zip_file.each do |entry|
-                entry.extract(File.join(dest, entry.name))
-              end
-            end
-          end
-          say 'Done'.green
+          do_with_spinner 'Extracting' do
+            prev_dir = Dir.pwd
 
+            Dir.chdir(dest)
+            shell("unzip \"#{package_file.path}\"")
+
+            Dir.chdir(prev_dir)
+          end
           dest
         end
 
         def run_installer(dir)
           old_pwd = Dir.pwd
-          stdout, stderr, status = nil
 
-          doing 'Installing'
-          with_spinner do
+          do_with_spinner 'Installing' do
             Dir.chdir(dir)
 
             File.chmod(0700, 'install.sh')
-            stdout, stderr, status = ::Open3.capture3('./install.sh')
+            shell('./install.sh')
 
             Dir.chdir(old_pwd)
           end
 
-          if status.success?
-            say 'Done'.green
-          else
-            say 'Failed'.red
-            puts stderr
-          end
-
-          status
         end
+
       end
     end
   end

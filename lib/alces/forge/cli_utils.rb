@@ -4,6 +4,9 @@ module Alces
   module Forge
     module CLIUtils
 
+      class ShellException < RuntimeError
+      end
+
       class << self
 
         def tty?
@@ -43,6 +46,36 @@ module Alces
               stream.print "\b \b"
             end
           end
+        end
+
+        def do_with_spinner(msg, &block)
+          doing msg
+
+          exc = nil
+
+          with_spinner do
+            begin
+              block.call
+            rescue Exception => e
+              exc = e
+            end
+          end
+
+          if exc
+            say 'Failed'.red
+            raise exc
+          else
+            say 'Done'.green
+          end
+
+        end
+
+        def shell(cmd)
+          stdout, stderr, status = ::Open3.capture3(cmd)
+          unless status.success?
+            raise ShellException.new(stderr)
+          end
+          stdout
         end
       end
     end
