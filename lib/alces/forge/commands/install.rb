@@ -79,26 +79,15 @@ module Alces
           dest = Dir.mktmpdir('forge-install')
 
           do_with_spinner 'Extracting' do
-            prev_dir = Dir.pwd
-
-            Dir.chdir(dest)
-            shell("unzip \"#{package_file.path}\"")
-
-            Dir.chdir(prev_dir)
+            shell("unzip \"#{package_file.path}\"", dest)
           end
           dest
         end
 
         def run_installer(dir)
-          old_pwd = Dir.pwd
-
           do_with_spinner 'Installing' do
-            Dir.chdir(dir)
-
-            File.chmod(0700, 'install.sh')
-            shell('./install.sh')
-
-            Dir.chdir(old_pwd)
+            File.chmod(0700, File.join(dir, 'install.sh'))
+            shell('./install.sh', dir)
           end
 
         end
