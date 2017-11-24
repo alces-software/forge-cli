@@ -71,7 +71,7 @@ module Alces
         end
 
         def shell(cmd, working_dir=nil)
-          stdout, stderr, status = ::Open3.capture3(cmd, :chdir=>working_dir)
+          stdout, stderr, status = ::Open3.capture3({'BUNDLE_GEMFILE' => nil}, cmd, :chdir=>working_dir)
 
           unless status.success?
             raise ShellException.new(stderr)
