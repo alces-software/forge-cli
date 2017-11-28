@@ -19,7 +19,11 @@ module Alces
         end
 
         def print_package(package)
-          puts "#{package['username']}/#{package['name'].bold}/#{package['version']}"
+          puts "#{package['username']}/#{package['name'].bold}/#{package['version']} [#{categories_to_string(package)}]"
+        end
+
+        def categories_to_string(package)
+          package['categories'].reverse.map { |c| c['name'] }.join('/')
         end
       end
     end
