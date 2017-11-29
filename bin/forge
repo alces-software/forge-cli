@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
-$:.unshift File.join(File.expand_path('..', File.dirname(__FILE__)), 'lib')
+ENV['BUNDLE_GEMFILE'] ||= "#{ENV['cw_ROOT']}/opt/forge/Gemfile"
+$: << "#{ENV['cw_ROOT']}/opt/forge/lib"
 
 require 'bundler/setup'
 require 'alces/forge/cli'
