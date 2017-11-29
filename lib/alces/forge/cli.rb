@@ -13,6 +13,8 @@ module Alces
         program :version, '0.0.1'
         program :description, 'Alces Flight Forge CLI'
 
+        assert_environment
+
         command :search do |c|
           c.syntax = 'forge search [options] searchterm'
           c.summary = 'Search for packages on Forge'
@@ -34,6 +36,18 @@ module Alces
         end
 
         run!
+      end
+
+      def assert_environment
+        unless ENV['USER'] == 'root'
+          raise 'This program should be run as root.'
+        end
+        unless ENV['cw_ROOT']
+          raise 'This program should be run in a Clusterware environment e.g. through running `alces forge`.'
+        end
+        unless ENV['cw_FORGE_API_URL']
+          raise 'No URL specified for Forge API. Please specify cw_FORGE_API_URL environment variable'
+        end
       end
 
     end
