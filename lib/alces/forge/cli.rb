@@ -18,6 +18,9 @@ module Alces
           c.summary = 'Search for packages on Forge'
           c.description = 'Search for packages on Forge.'
           c.example 'Perform a search for "genetics"', 'alces forge search genetics'
+          c.option '--category CATEGORY', String, 'Only show packages in category CATEGORY'
+          c.option '--software', 'Only show software packages'
+          c.option '--config', 'Only show configuration packages'
           c.action ::Alces::Forge::Commands::Search, :search
         end
 

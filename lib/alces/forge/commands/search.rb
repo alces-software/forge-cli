@@ -6,7 +6,27 @@ module Alces
     module Commands
       class Search < CommandBase
         def search(args, options)
-          results = api.get('search', params: {:q => args[0]} )
+
+          params = {
+              :q => args[0]
+          }
+
+          [options.category].tap { |cats|
+            if options.software
+              cats << 'Software'
+            end
+            if options.config
+              cats << 'Config'
+            end
+          }.compact.each do |cat|
+            cats = params.fetch('cat[]') {
+              params['cat[]'] = []  # Create an empty array if it doesn't yet exist
+              # We do this here to avoid passing the cat[] param if it's not used
+            }
+            cats << cat
+          end
+
+          results = api.get('search', params: params )
           print_packages_list(results['packages'])
         end
 
