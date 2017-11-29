@@ -23,7 +23,7 @@ module Alces
         end
 
         def categories_to_string(package)
-          package['categories'].reverse.map { |c| c['name'] }.join('/')
+          package['categories'].reverse.map { |c| c['name'] }.join(' > ')
         end
       end
     end
