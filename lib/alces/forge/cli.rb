@@ -1,8 +1,8 @@
 require 'rubygems'
 require 'commander'
 require 'alces/forge/commands/install'
-require 'alces/forge/commands/login'
 require 'alces/forge/commands/search'
+require 'alces/forge/commands/sso'
 
 module Alces
   module Forge
@@ -40,7 +40,14 @@ module Alces
           c.syntax = 'forge login'
           c.summary = 'Log in to your Forge account'
           c.description = 'Log in to your Forge account.'
-          c.action Alces::Forge::Commands::Login, :login
+          c.action Alces::Forge::Commands::SSO, :login
+        end
+
+        command :logout do |c|
+          c.syntax = 'forge logout'
+          c.summary = 'Log out your Forge account'
+          c.description = 'Log out of your Forge account.'
+          c.action Alces::Forge::Commands::SSO, :logout
         end
 
         run!

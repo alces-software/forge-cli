@@ -21,12 +21,20 @@ module Alces
         end
 
         def set(key, value)
-          config[key.to_sym] = value
+          if value
+            config[key.to_sym] = value
+          else
+            config.delete(key.to_sym)
+          end
           save
         end
 
         def api_url
           ENV['cw_FORGE_API_URL'] || config[:api_url] || 'https://api.forge.alces-flight.com/v1'
+        end
+
+        def sso_url
+          ENV['cw_FORGE_SSO_URL'] || config[:sso_url] || 'https://accounts.alces-flight.com'
         end
 
         private

@@ -14,6 +14,29 @@ module Alces
         JSON.parse(http.get("#{@base_url}/#{endpoint}", *kwargs).to_s)
       end
 
+      def login(username, password)
+        sso_base_url = Config.sso_url.chomp('/')
+
+        response = http.post(
+            "#{sso_base_url}/sign-in",
+            params: {
+                permanent: 1
+            },
+            json: {
+                account: {
+                    username: username,
+                    password: password
+                }
+            }
+        )
+
+        if !response.status.success?
+          raise response.to_s
+        else
+          JSON.parse(response.to_s)['user']['authentication_token']
+        end
+      end
+
       private
 
       def http
