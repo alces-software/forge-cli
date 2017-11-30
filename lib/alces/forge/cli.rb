@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'commander'
 require 'alces/forge/commands/install'
+require 'alces/forge/commands/login'
 require 'alces/forge/commands/search'
 
 module Alces
@@ -23,7 +24,7 @@ module Alces
           c.option '--category CATEGORY', String, 'Only show packages in category CATEGORY'
           c.option '--software', 'Only show software packages'
           c.option '--config', 'Only show configuration packages'
-          c.action ::Alces::Forge::Commands::Search, :search
+          c.action Alces::Forge::Commands::Search, :search
         end
 
         command :install do |c|
@@ -32,7 +33,14 @@ module Alces
           c.description = 'Download and install a Forge package.'
           c.example 'Install latest version of a package', 'alces forge install alces/somepackage'
           c.example 'Install a specific version of a package', 'alces forge install alces/somepackage/1.0.2'
-          c.action ::Alces::Forge::Commands::Install, :install
+          c.action Alces::Forge::Commands::Install, :install
+        end
+
+        command :login do |c|
+          c.syntax = 'forge login'
+          c.summary = 'Log in to your Forge account'
+          c.description = 'Log in to your Forge account.'
+          c.action Alces::Forge::Commands::Login, :login
         end
 
         run!
