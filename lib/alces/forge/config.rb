@@ -25,6 +25,10 @@ module Alces
           save
         end
 
+        def api_url
+          ENV['cw_FORGE_API_URL'] || config[:api_url] || 'https://api.forge.alces-flight.com/v1'
+        end
+
         private
 
         DEFAULT_CONFIG = {

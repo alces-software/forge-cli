@@ -45,9 +45,6 @@ module Alces
         unless ENV['cw_ROOT']
           raise 'This program should be run in a Clusterware environment e.g. through running `alces forge`.'
         end
-        unless ENV['cw_FORGE_API_URL']
-          raise 'No URL specified for Forge API. Please specify cw_FORGE_API_URL environment variable'
-        end
       end
 
     end

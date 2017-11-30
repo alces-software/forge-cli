@@ -1,3 +1,4 @@
+require 'alces/forge/config'
 require 'http'
 require 'json'
 
@@ -6,11 +7,7 @@ module Alces
     class API
 
       def initialize
-        if ENV['cw_FORGE_API_URL']
-          @base_url = ENV['cw_FORGE_API_URL'].chomp('/')
-        else
-         raise 'No URL specified for Forge API. Please specify cw_FORGE_API_URL environment variable'
-        end
+          @base_url = Config.api_url.chomp('/')
       end
 
       def get(endpoint, *kwargs)
