@@ -17,9 +17,14 @@ module Alces
       private
 
       def http
-        HTTP.headers(
+        h = HTTP.headers(
           user_agent: 'Forge-CLI/0.0.1'
         )
+        if Config.auth_token
+          h.auth("Bearer #{Config.auth_token}")
+        else
+          h
+        end
       end
 
     end
