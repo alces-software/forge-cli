@@ -43,7 +43,31 @@ module Alces
         end
 
         def categories_to_string(package)
-          package['categories'].reverse.map { |c| c['name'] }.join(' > ')
+          package['categories'].reverse.map { |c| coloured(c['name']) }.join(' > ')
+        end
+
+        def coloured(category)
+          colour_index = (Digest::SHA1.hexdigest(category).to_i(16) % usable_colours.count)
+          category.colorize(usable_colours[colour_index])
+        end
+
+        def usable_colours
+          [
+              :red,
+              :light_red,
+              :green,
+              :light_green,
+              :yellow,
+              :light_yellow,
+              :blue,
+              :light_blue,
+              :magenta,
+              :light_magenta,
+              :cyan,
+              :light_cyan,
+              :white,
+              :light_white
+          ]
         end
       end
     end
