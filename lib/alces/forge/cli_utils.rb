@@ -52,10 +52,11 @@ module Alces
           doing msg
 
           exc = nil
+          result = nil
 
           with_spinner do
             begin
-              block.call
+              result = block.call
             rescue Exception => e
               exc = e
             end
@@ -67,6 +68,8 @@ module Alces
           else
             say 'Done'.green
           end
+
+          result
 
         end
 
