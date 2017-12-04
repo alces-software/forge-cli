@@ -42,32 +42,24 @@ module Alces
         DEFAULT_CONFIG = {
         }
 
-        CONFIG_DIRECTORY = '~/.config/clusterware/forge'
+        CONFIG_DIRECTORY = "#{ENV['cw_ROOT']}/etc/forge"
         CONFIG_FILE_PATH = "#{CONFIG_DIRECTORY}/config.yml"
 
         def config
           @config ||= DEFAULT_CONFIG.dup.tap { |cfg|
             # Merge in config settings here
-            if File.exists?(user_config_file)
-              cfg.merge!(YAML.load_file(user_config_file))
+            if File.exists?(CONFIG_FILE_PATH)
+              cfg.merge!(YAML.load_file(CONFIG_FILE_PATH))
             end
           }
         end
 
-        def user_config_dir
-          File.expand_path(CONFIG_DIRECTORY)
-        end
-
-        def user_config_file
-          File.expand_path(CONFIG_FILE_PATH)
-        end
-
         def save
-          unless Dir.exists?(user_config_dir)
-            Dir.mkdir(user_config_dir, 0700)
+          unless Dir.exists?(CONFIG_DIRECTORY)
+            Dir.mkdir(CONFIG_DIRECTORY, 0700)
           end
-          File.write(user_config_file, config.to_yaml)
-          File.chmod(0600, user_config_file)  # File may contain auth token so should not be world-readable!
+          File.write(CONFIG_FILE_PATH, config.to_yaml)
+          File.chmod(0600, CONFIG_FILE_PATH)  # File may contain auth token so should not be world-readable!
         end
 
       end
