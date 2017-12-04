@@ -40,6 +40,7 @@ module Alces
         private
 
         DEFAULT_CONFIG = {
+            package_cache_dir: '/opt/forge/var/cache/packages'
         }
 
         CONFIG_DIRECTORY = "#{ENV['cw_ROOT']}/etc/forge"

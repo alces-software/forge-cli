@@ -1,5 +1,6 @@
 require 'alces/forge/cli_utils'
 require 'alces/forge/commands/command_base'
+require 'alces/forge/config'
 require 'alces/forge/package_metadata'
 require 'forwardable'
 require 'http'
@@ -24,13 +25,12 @@ module Alces
 
           say "Found package: #{metadata.name.bold} version #{metadata.version.bold}"
 
-          package = download_package(metadata.packageUrl)
+          package_file = download_or_cached_package(metadata)
 
-          extracted_dir = extract_package(package)
+          extracted_dir = extract_package(package_file)
 
           run_installer(extracted_dir)
 
-          package.unlink
           FileUtils.remove_entry(extracted_dir)
 
         end
@@ -45,24 +45,45 @@ module Alces
           match
         end
 
-        def download_package(url)
-          temp = Tempfile.new('forge-dl')
-          temp.binmode
-          do_with_spinner 'Downloading' do
-            body = HTTP.get(url).body
-            while (part = body.readpartial) do
-              temp.write(part)
-            end
-            temp.close
+        def download_cache_path(metadata)
+          File.join(Config.package_cache_dir, metadata.username, metadata.name)
+        end
+
+        def download_cache_file(metadata)
+          File.join(download_cache_path(metadata), metadata.version)
+        end
+
+        def download_or_cached_package(metadata)
+          target = download_cache_file(metadata)
+          if File.exists?(target)
+            target
+          else
+            download_package(metadata)
           end
-          temp
+        end
+
+        def download_package(metadata)
+          dl_target_dir = download_cache_path(metadata)
+          unless Dir.exists?(dl_target_dir)
+            FileUtils.mkdir_p(dl_target_dir)
+          end
+
+          target = File.open(download_cache_file(metadata), 'wb')
+          do_with_spinner 'Downloading' do
+            body = HTTP.get(metadata.packageUrl).body
+            while (part = body.readpartial) do
+              target.write(part)
+            end
+            target.close
+          end
+          target.path
         end
 
         def extract_package(package_file)
           dest = Dir.mktmpdir('forge-install')
 
           do_with_spinner 'Extracting' do
-            shell("unzip \"#{package_file.path}\"", dest)
+            shell("unzip \"#{package_file}\"", dest)
           end
           dest
         end
