@@ -24,6 +24,7 @@ module Alces
       end
 
       def method_missing(s, *a, &_)
+        s = s.to_s
         if metadata.has_key?(s)
           metadata[s]
         elsif metadata['attributes'].has_key?(s)
@@ -35,7 +36,7 @@ module Alces
 
       private
 
-      def new(metadata)
+      def initialize(metadata)
         @metadata = metadata
       end
 
