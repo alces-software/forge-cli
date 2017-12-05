@@ -28,8 +28,10 @@ module Alces
         end
 
         def set_installed(metadata)
-          installed_packages << metadata.package_path
-          save_local
+          unless installed_packages.include?(metadata.package_path)
+            installed_packages << metadata.package_path
+            save_local
+          end
         end
 
         def marked_packages(node_type)
@@ -40,8 +42,10 @@ module Alces
         end
 
         def mark(metadata, node_type)
-          marked_packages(node_type) << metadata.package_path
-          save_master
+          unless marked_packages(node_type).include?(metadata.package_path)
+            marked_packages(node_type) << metadata.package_path
+            save_master
+          end
         end
 
         private
