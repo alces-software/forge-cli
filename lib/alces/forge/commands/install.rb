@@ -29,6 +29,7 @@ module Alces
           if Registry.installed?(metadata) && !options.reinstall
             say 'Package is already installed! Use --reinstall to reinstall.'
           else
+            Registry.mark(metadata, :master)
             package_file = download_or_cached_package(metadata)
 
             extracted_dir = extract_package(package_file)

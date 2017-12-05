@@ -14,7 +14,8 @@ module Alces
       LOCAL_REGISTRY_DIR = "#{ENV['cw_ROOT']}/etc/forge"
       LOCAL_REGISTRY_PATH = File.join(LOCAL_REGISTRY_DIR, 'local.yml')
 
-      DEFAULT_REGISTRY_CONTENT = { packages: [] }
+      DEFAULT_LOCAL_REGISTRY = {packages: [] }
+      DEFAULT_MASTER_REGISTRY = {master: [], compute: []}
 
       class << self
 
@@ -31,26 +32,45 @@ module Alces
           save_local
         end
 
+        def marked_packages(node_type)
+          master[node_type]
+        end
+
+        def mark(metadata, node_type)
+          marked_packages(node_type) << metadata.package_path
+          save_master
+        end
+
         private
 
         def master
-          @master ||= load(MASTER_REGISTRY_PATH)
+          @master ||= load(MASTER_REGISTRY_PATH, DEFAULT_MASTER_REGISTRY)
         end
 
         def local
-          @local ||= load(LOCAL_REGISTRY_PATH)
+          @local ||= load(LOCAL_REGISTRY_PATH, DEFAULT_LOCAL_REGISTRY)
         end
 
-        def load(file)
-          YAML.load_file(file) rescue DEFAULT_REGISTRY_CONTENT
+        def load(file, default=nil)
+          YAML.load_file(file) rescue default
         end
 
         def save_local
-          unless Dir.exists?(LOCAL_REGISTRY_DIR)
-            FileUtils.mkdir_p(LOCAL_REGISTRY_DIR)
-          end
-          File.write(LOCAL_REGISTRY_PATH, local.to_yaml)
+          save(LOCAL_REGISTRY_DIR, LOCAL_REGISTRY_PATH, local.to_yaml)
         end
+
+        def save_master
+          save(MASTER_REGISTRY_DIR, MASTER_REGISTRY_PATH, master.to_yaml)
+        end
+
+        def save(dir, path, data)
+          unless Dir.exists?(dir)
+            FileUtils.mkdir_p(dir)
+          end
+          File.write(path, data)
+        end
+
+
 
       end
 
