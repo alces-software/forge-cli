@@ -18,6 +18,9 @@ module Alces
         def_delegators CLIUtils, :doing, :do_with_spinner, :say, :shell
 
         def install(args, options)
+
+          check_sanity(options)
+
           package_props = split_package_path(args[0])
 
           metadata = do_with_spinner 'Downloading metadata' do
@@ -26,23 +29,47 @@ module Alces
 
           say "Found package: #{metadata.name.bold} version #{metadata.version.bold}"
 
-          if Registry.installed?(metadata) && !options.reinstall
-            say 'Package is already installed! Use --reinstall to reinstall.'
-          else
-            Registry.mark(metadata, :master)
-            package_file = download_or_cached_package(metadata)
+          # We ensure the package file is downloaded and cached regardless of whether we are about to use it
+          # immediately to install onto the master node.
+          package_file = download_or_cached_package(metadata)
 
-            extracted_dir = extract_package(package_file)
-
-            run_installer(extracted_dir)
-
-            FileUtils.remove_entry(extracted_dir)
-            Registry.set_installed(metadata)
+          if should_install_on_compute_nodes(options)
+            Registry.mark(metadata, :compute)
+            say 'Package marked for installation on compute nodes.'
           end
 
+          if should_install_here(options)
+            Registry.mark(metadata, :master)
+
+            if Registry.installed?(metadata) && !options.reinstall
+              say 'Package is already installed! Use --reinstall to reinstall.'
+            else
+
+              extracted_dir = extract_package(package_file)
+
+              run_installer(extracted_dir)
+
+              FileUtils.remove_entry(extracted_dir)
+              Registry.set_installed(metadata)
+            end
+          end
         end
 
         private
+
+        def check_sanity(options)
+          if options.compute_only && options.everywhere
+            raise '--compute-only and --everywhere are mutually exclusive. Please specify at most one.'
+          end
+        end
+
+        def should_install_here(options)
+          !options.compute_only
+        end
+
+        def should_install_on_compute_nodes(options)
+          options.everywhere || options.compute_only
+        end
 
         def split_package_path(path)
           match = /(?<user>[^\/]+)\/(?<package>[^\/]+)(\/(?<version>[^\/]+))?/.match(path)

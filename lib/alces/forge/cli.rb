@@ -33,6 +33,8 @@ module Alces
           c.description = 'Download and install a Forge package.'
           c.example 'Install latest version of a package', 'alces forge install alces/somepackage'
           c.example 'Install a specific version of a package', 'alces forge install alces/somepackage/1.0.2'
+          c.option '--compute-only', 'Mark the package for installation on compute nodes only'
+          c.option '--everywhere', 'Mark the package for installation on compute nodes as well as the master node'
           c.option '--reinstall', 'Reinstall package if it is already installed'
           c.action Alces::Forge::Commands::Install, :install
         end
