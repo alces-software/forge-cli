@@ -26,8 +26,8 @@ module Alces
 
           say "Found package: #{metadata.name.bold} version #{metadata.version.bold}"
 
-          if Registry.installed?(metadata)
-            say 'Package is already installed!'
+          if Registry.installed?(metadata) && !options.reinstall
+            say 'Package is already installed! Use --reinstall to reinstall.'
           else
             package_file = download_or_cached_package(metadata)
 
