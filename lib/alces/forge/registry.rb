@@ -33,6 +33,9 @@ module Alces
         end
 
         def marked_packages(node_type)
+          unless master.include?(node_type)
+            master[node_type] = []
+          end
           master[node_type]
         end
 
