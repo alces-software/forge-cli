@@ -2,6 +2,7 @@ require 'alces/forge/cli_utils'
 require 'alces/forge/commands/command_base'
 require 'alces/forge/config'
 require 'alces/forge/package_metadata'
+require 'alces/forge/registry'
 require 'forwardable'
 require 'http'
 require 'open3'
@@ -25,13 +26,18 @@ module Alces
 
           say "Found package: #{metadata.name.bold} version #{metadata.version.bold}"
 
-          package_file = download_or_cached_package(metadata)
+          if Registry.installed?(metadata)
+            say 'Package is already installed!'
+          else
+            package_file = download_or_cached_package(metadata)
 
-          extracted_dir = extract_package(package_file)
+            extracted_dir = extract_package(package_file)
 
-          run_installer(extracted_dir)
+            run_installer(extracted_dir)
 
-          FileUtils.remove_entry(extracted_dir)
+            FileUtils.remove_entry(extracted_dir)
+            Registry.set_installed(metadata)
+          end
 
         end
 

@@ -36,6 +36,10 @@ module Alces
         end
       end
 
+      def package_path
+        "#{username}/#{name}/#{version}"
+      end
+
       private
 
       def initialize(metadata)
