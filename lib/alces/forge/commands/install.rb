@@ -1,6 +1,7 @@
 require 'alces/forge/cli_utils'
 require 'alces/forge/commands/command_base'
 require 'alces/forge/config'
+require 'alces/forge/package_file'
 require 'alces/forge/package_metadata'
 require 'alces/forge/registry'
 require 'forwardable'
@@ -27,9 +28,15 @@ module Alces
 
           say "Found package: #{metadata.name.bold} version #{metadata.version.bold}"
 
+          package_file = PackageFile.for(metadata)
+
           # We ensure the package file is downloaded and cached regardless of whether we are about to use it
           # immediately to install onto the master node.
-          package_file = download_or_cached_package(metadata)
+          unless package_file.cached? && !options.reinstall
+            do_with_spinner 'Downloading' do
+              package_file.download
+            end
+          end
 
           if should_install_on_compute_nodes(options)
             Registry.mark(metadata, :compute)
@@ -43,13 +50,20 @@ module Alces
               say 'Package is already installed! Use --reinstall to reinstall.'
             else
 
-              extracted_dir = extract_package(package_file)
+              do_with_spinner 'Extracting' do
+                package_file.extract
+              end
 
-              run_installer(extracted_dir)
+              do_with_spinner 'Installing' do
+                package_file.install
+              end
 
-              FileUtils.remove_entry(extracted_dir)
               Registry.set_installed(metadata)
             end
+          end
+        ensure
+          do_with_spinner 'Cleaning up' do
+            package_file.clean_up unless package_file.nil?
           end
         end
 
@@ -67,57 +81,6 @@ module Alces
 
         def should_install_on_compute_nodes(options)
           options.everywhere || options.compute_only
-        end
-
-        def download_cache_path(metadata)
-          File.join(Config.package_cache_dir, metadata.username, metadata.name)
-        end
-
-        def download_cache_file(metadata)
-          File.join(download_cache_path(metadata), metadata.version)
-        end
-
-        def download_or_cached_package(metadata)
-          target = download_cache_file(metadata)
-          if File.exists?(target)
-            target
-          else
-            download_package(metadata)
-          end
-        end
-
-        def download_package(metadata)
-          dl_target_dir = download_cache_path(metadata)
-          unless Dir.exists?(dl_target_dir)
-            FileUtils.mkdir_p(dl_target_dir)
-          end
-
-          target = File.open(download_cache_file(metadata), 'wb')
-          do_with_spinner 'Downloading' do
-            body = HTTP.get(metadata.packageUrl).body
-            while (part = body.readpartial) do
-              target.write(part)
-            end
-            target.close
-          end
-          target.path
-        end
-
-        def extract_package(package_file)
-          dest = Dir.mktmpdir('forge-install')
-
-          do_with_spinner 'Extracting' do
-            shell("unzip \"#{package_file}\"", dest)
-          end
-          dest
-        end
-
-        def run_installer(dir)
-          do_with_spinner 'Installing' do
-            File.chmod(0700, File.join(dir, 'install.sh'))
-            shell('./install.sh', dir)
-          end
-
         end
 
       end
