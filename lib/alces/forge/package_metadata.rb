@@ -25,6 +25,11 @@ module Alces
         new(metadata)
       end
 
+      def self.load_from_path(api, package_path)
+        package_props = split_package_path(package_path)
+        return load_from_api(api, package_props[:user], package_props[:package], package_props[:version])
+      end
+
       def method_missing(s, *a, &_)
         s = s.to_s
         if metadata.has_key?(s)
@@ -49,6 +54,15 @@ module Alces
       def metadata
         @metadata
       end
+
+      def self.split_package_path(path)
+        match = /(?<user>[^\/]+)\/(?<package>[^\/]+)(\/(?<version>[^\/]+))?/.match(path)
+
+        raise 'Unrecognised package format. Please specify as username/packagename[/version]' unless match
+
+        match
+      end
+
 
     end
   end

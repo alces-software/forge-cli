@@ -21,10 +21,8 @@ module Alces
 
           check_sanity(options)
 
-          package_props = split_package_path(args[0])
-
           metadata = do_with_spinner 'Downloading metadata' do
-            Forge::PackageMetadata.load_from_api(api, package_props[:user], package_props[:package], package_props[:version])
+            Forge::PackageMetadata.load_from_path(api, args[0])
           end
 
           say "Found package: #{metadata.name.bold} version #{metadata.version.bold}"
@@ -69,14 +67,6 @@ module Alces
 
         def should_install_on_compute_nodes(options)
           options.everywhere || options.compute_only
-        end
-
-        def split_package_path(path)
-          match = /(?<user>[^\/]+)\/(?<package>[^\/]+)(\/(?<version>[^\/]+))?/.match(path)
-
-          raise 'Unrecognised package format. Please specify as username/packagename[/version]' unless match
-
-          match
         end
 
         def download_cache_path(metadata)
