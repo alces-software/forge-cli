@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+ENV['BUNDLE_GEMFILE'] ||= "#{ENV['cw_ROOT']}/opt/forge/Gemfile"
+$: << "#{ENV['cw_ROOT']}/opt/forge/lib"
+
+require 'bundler/setup'
+require 'alces/forge/tasks/install_marked_packages'
+
+Alces::Forge::Tasks.install_marked_packages
