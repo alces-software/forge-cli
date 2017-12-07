@@ -53,7 +53,7 @@ module Alces
       end
 
       def clean_up
-        if Dir.exists?(@extracted_dir)
+        if !@extracted_dir.nil? && Dir.exists?(@extracted_dir)
           FileUtils.remove_entry(@extracted_dir)
         end
       end
