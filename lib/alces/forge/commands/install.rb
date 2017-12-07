@@ -6,7 +6,6 @@ require 'alces/forge/package_metadata'
 require 'alces/forge/registry'
 require 'forwardable'
 require 'http'
-require 'open3'
 require 'tempfile'
 
 module Alces
