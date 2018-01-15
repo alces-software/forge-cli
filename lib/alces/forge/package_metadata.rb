@@ -30,6 +30,15 @@ module Alces
         return load_from_api(api, package_props[:user], package_props[:package], package_props[:version])
       end
 
+      def self.load_by_id(api, package_id)
+        metadata = api.get("packages/#{package_id}/")['data']
+        new(metadata)
+      end
+
+      def initialize(metadata)
+        @metadata = metadata
+      end
+
       def method_missing(s, *a, &_)
         s = s.to_s
         if metadata.has_key?(s)
@@ -45,11 +54,17 @@ module Alces
         "#{username}/#{name}/#{version}"
       end
 
-      private
-
-      def initialize(metadata)
-        @metadata = metadata
+      def id
+        metadata['id']
       end
+
+      def dependencies
+        metadata['relationships']['dependencies']['data'].map { |dep|
+          dep['id']
+        }
+      end
+
+      private
 
       def metadata
         @metadata

@@ -8,3 +8,7 @@ source 'http://rubygems.org'
 gem 'colorize'
 gem 'commander'
 gem 'http'
+
+group 'development' do
+  gem 'rspec'
+end

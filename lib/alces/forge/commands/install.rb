@@ -1,6 +1,7 @@
 require 'alces/forge/cli_utils'
 require 'alces/forge/commands/command_base'
 require 'alces/forge/config'
+require 'alces/forge/dependencies'
 require 'alces/forge/package_file'
 require 'alces/forge/package_metadata'
 require 'alces/forge/registry'
@@ -27,42 +28,56 @@ module Alces
 
           say "Found package: #{metadata.name.bold} version #{metadata.version.bold}"
 
-          package_file = PackageFile.for(metadata)
+          if Registry.installed?(candidate) && !options.reinstall
+            say 'Package is already installed! Use --reinstall to reinstall.'
+            return false
+          end
 
-          # We ensure the package file is downloaded and cached regardless of whether we are about to use it
-          # immediately to install onto the master node.
-          unless package_file.cached? && !options.reinstall
-            do_with_spinner 'Downloading' do
-              package_file.download
+          to_install = do_with_spinner 'Resolving dependencies' do
+            Dependencies.resolve(api, metadata)
+          end
+
+          package_files = []
+
+          to_install.each do |candidate|
+
+            package_file = do_with_spinner "Downloading #{candidate.package_path}" do
+              PackageFile.for(candidate).tap { |pf|
+                package_files << pf
+                # We ensure the package file is downloaded and cached regardless of whether we are about to use it
+                # immediately to install onto the master node.
+                unless pf.cached? && !options.reinstall
+                  pf.download
+                end
+              }
             end
-          end
 
-          if should_install_on_compute_nodes(options)
-            Registry.mark(metadata, :compute)
-            say 'Package marked for installation on compute nodes.'
-          end
+            if should_install_on_compute_nodes(options)
+              Registry.mark(candidate, :compute)
+              say 'Package marked for installation on compute nodes.'
+            end
 
-          if should_install_here(options)
-            Registry.mark(metadata, :master)
+            if should_install_here(options)
+              Registry.mark(candidate, :master)
 
-            if Registry.installed?(metadata) && !options.reinstall
-              say 'Package is already installed! Use --reinstall to reinstall.'
-            else
+                do_with_spinner "Extracting #{candidate.package_path}" do
+                  package_file.extract
+                end
 
-              do_with_spinner 'Extracting' do
-                package_file.extract
-              end
+                do_with_spinner "Installing #{candidate.package_path}" do
+                  package_file.install
+                end
 
-              do_with_spinner 'Installing' do
-                package_file.install
-              end
-
-              Registry.set_installed(metadata)
+                Registry.set_installed(candidate)
             end
           end
         ensure
           do_with_spinner 'Cleaning up' do
-            package_file.clean_up unless package_file.nil?
+            if package_files
+              package_files.each { |package_file|
+                package_file.clean_up unless package_file.nil?
+              }
+            end
           end
         end
 
