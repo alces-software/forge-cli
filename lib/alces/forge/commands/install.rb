@@ -22,13 +22,11 @@ module Alces
 
           check_sanity(options)
 
-          metadata = do_with_spinner 'Downloading metadata' do
-            Forge::PackageMetadata.load_from_path(api, args[0])
-          end
+          metadata = get_package_metadata(args)
 
           say "Found package: #{metadata.name.bold} version #{metadata.version.bold}"
 
-          if Registry.installed?(candidate) && !options.reinstall
+          if Registry.installed?(metadata) && !options.reinstall
             say 'Package is already installed! Use --reinstall to reinstall.'
             return false
           end
@@ -82,6 +80,24 @@ module Alces
         end
 
         private
+
+        def get_package_metadata(args)
+          package_path_or_file = args[0]
+
+          if File.exists?(package_path_or_file)
+            do_with_spinner 'Extracting metadata' do
+              PackageMetadata.load_from_file(package_path_or_file).tap { |md|
+                dest = PackageFile.for(md).from_cache
+                FileUtils.mkdir_p(File.dirname(dest))
+                FileUtils.cp(package_path_or_file, dest)
+              }
+            end
+          else
+            do_with_spinner 'Downloading metadata' do
+              Forge::PackageMetadata.load_from_path(api, package_path_or_file)
+            end
+          end
+        end
 
         def check_sanity(options)
           if options.compute_only && options.everywhere

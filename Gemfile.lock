@@ -33,6 +33,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.7.0)
     rspec-support (3.7.0)
+    rubyzip (1.2.1)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.4)
@@ -45,6 +46,7 @@ DEPENDENCIES
   commander
   http
   rspec
+  rubyzip
 
 BUNDLED WITH
    1.15.1

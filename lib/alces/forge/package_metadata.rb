@@ -1,3 +1,7 @@
+require 'alces/forge/errors'
+require 'json'
+require 'zip'
+
 module Alces
   module Forge
     class PackageMetadata
@@ -33,6 +37,14 @@ module Alces
       def self.load_by_id(api, package_id)
         metadata = api.get("packages/#{package_id}/")['data']
         new(metadata)
+      end
+
+      def self.load_from_file(filename)
+        Zip::File.open(filename) do |zipfile|
+          metadata_file = zipfile.glob('metadata.json').first
+          raise Errors::InvalidPackageException unless metadata_file
+          new(JSON.parse(metadata_file.get_input_stream.read))
+        end
       end
 
       def initialize(metadata)
