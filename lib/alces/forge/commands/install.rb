@@ -39,34 +39,37 @@ module Alces
 
           to_install.each do |candidate|
 
-            package_file = do_with_spinner "Downloading #{candidate.package_path}" do
-              PackageFile.for(candidate).tap { |pf|
-                package_files << pf
-                # We ensure the package file is downloaded and cached regardless of whether we are about to use it
-                # immediately to install onto the master node.
-                unless pf.cached? && !options.reinstall
-                  pf.download
-                end
-              }
-            end
+            unless !Registry.installed?(candidate) || options.reinstall
 
-            if should_install_on_compute_nodes(options)
-              Registry.mark(candidate, :compute)
-              say 'Package marked for installation on compute nodes.'
-            end
+              package_file = do_with_spinner "Downloading #{candidate.package_path}" do
+                PackageFile.for(candidate).tap { |pf|
+                  package_files << pf
+                  # We ensure the package file is downloaded and cached regardless of whether we are about to use it
+                  # immediately to install onto the master node.
+                  unless pf.cached? && !options.reinstall
+                    pf.download
+                  end
+                }
+              end
 
-            if should_install_here(options)
-              Registry.mark(candidate, :master)
+              if should_install_on_compute_nodes(options)
+                Registry.mark(candidate, :compute)
+                say 'Package marked for installation on compute nodes.'
+              end
 
-                do_with_spinner "Extracting #{candidate.package_path}" do
-                  package_file.extract
-                end
+              if should_install_here(options)
+                Registry.mark(candidate, :master)
 
-                do_with_spinner "Installing #{candidate.package_path}" do
-                  package_file.install
-                end
+                  do_with_spinner "Extracting #{candidate.package_path}" do
+                    package_file.extract
+                  end
 
-                Registry.set_installed(candidate)
+                  do_with_spinner "Installing #{candidate.package_path}" do
+                    package_file.install
+                  end
+
+                  Registry.set_installed(candidate)
+              end
             end
           end
         ensure
