@@ -9,7 +9,11 @@ module Alces
       def_delegators CLIUtils, :shell
 
       def self.for(metadata)
-        new(metadata)
+        new(metadata, nil)
+      end
+
+      def self.for_local(metadata, file)
+        new(metadata, file)
       end
 
       def cached?
@@ -26,13 +30,17 @@ module Alces
           FileUtils.mkdir_p(dl_target_dir)
         end
 
-        target = File.open(download_cache_file, 'wb')
-        body = HTTP.get(@metadata.packageUrl).body
-        while (part = body.readpartial) do
-          target.write(part)
+        if @local_file
+          FileUtils.cp(@local_file, download_cache_file)
+        elsif !@metadata.local_file?
+          target = File.open(download_cache_file, 'wb')
+          body = HTTP.get(@metadata.packageUrl).body
+          while (part = body.readpartial) do
+            target.write(part)
+          end
+          target.close
         end
-        target.close
-        target.path
+        download_cache_file
       end
 
       def extract
@@ -60,8 +68,9 @@ module Alces
 
       private
 
-      def initialize(metadata)
+      def initialize(metadata, local_file)
         @metadata = metadata
+        @local_file = local_file
       end
 
       def download_cache_path

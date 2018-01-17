@@ -43,12 +43,13 @@ module Alces
         Zip::File.open(filename) do |zipfile|
           metadata_file = zipfile.glob('metadata.json').first
           raise Errors::InvalidPackageException unless metadata_file
-          new(JSON.parse(metadata_file.get_input_stream.read))
+          new(JSON.parse(metadata_file.get_input_stream.read), true)
         end
       end
 
-      def initialize(metadata)
+      def initialize(metadata, local_file=false)
         @metadata = metadata
+        @local_file = local_file
       end
 
       def method_missing(s, *a, &_)
@@ -74,6 +75,10 @@ module Alces
         metadata['relationships']['dependencies']['data'].map { |dep|
           dep['id']
         }
+      end
+
+      def local_file?
+        @local_file
       end
 
       private

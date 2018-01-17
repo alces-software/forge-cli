@@ -39,7 +39,7 @@ module Alces
 
           to_install.each do |candidate|
 
-            unless !Registry.installed?(candidate) || options.reinstall
+            if !Registry.installed?(candidate) || options.reinstall
 
               package_file = do_with_spinner "Downloading #{candidate.package_path}" do
                 PackageFile.for(candidate).tap { |pf|
@@ -90,9 +90,7 @@ module Alces
           if File.exists?(package_path_or_file)
             do_with_spinner 'Extracting metadata' do
               PackageMetadata.load_from_file(package_path_or_file).tap { |md|
-                dest = PackageFile.for(md).from_cache
-                FileUtils.mkdir_p(File.dirname(dest))
-                FileUtils.cp(package_path_or_file, dest)
+                PackageFile.for_local(md, package_path_or_file).download
               }
             end
           else
