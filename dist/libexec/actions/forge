@@ -29,12 +29,6 @@ require process
 process_reexec_sudo "$@"
 
 require files
-files_load_config instance config/cluster
 files_load_config --optional forge
-
-if [ "$cw_INSTANCE_role" != "master" ]; then
-  echo "Alces Forge must be run from the cluster master node."
-  exit 1
-fi
 
 cw_FORGE_API_URL="${cw_FORGE_API_URL}" cw_FORGE_SSO_URL="${cw_FORGE_SSO_URL} ${cw_RUBY} ${cw_ROOT}/opt/forge/bin/forge "$@"
