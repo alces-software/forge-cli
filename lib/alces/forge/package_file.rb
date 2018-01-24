@@ -1,6 +1,11 @@
 require 'alces/forge/cli_utils'
 require 'forwardable'
 
+# Hack required to make Addresable/HTTP generate over-encoded addresses required by AWS
+require 'addressable/uri'
+Addressable::URI::CharacterClasses::PCHAR.gsub!("\\+", "")
+require 'http'
+
 module Alces
   module Forge
     class PackageFile
@@ -33,12 +38,20 @@ module Alces
         if @local_file
           FileUtils.cp(@local_file, download_cache_file)
         elsif !@metadata.local_file?
-          target = File.open(download_cache_file, 'wb')
-          body = HTTP.get(@metadata.packageUrl).body
-          while (part = body.readpartial) do
-            target.write(part)
+
+          resp = HTTP.headers(
+              user_agent: 'Forge-CLI/0.0.1'
+          ).get(@metadata.packageUrl)
+
+
+          raise Exception.new("Download unsuccessful: #{resp.status}") unless resp.status.success?
+
+          body = resp.body
+          File.open(download_cache_file, 'wb') do |target|
+            while (part = body.readpartial) do
+              target.write(part)
+            end
           end
-          target.close
         end
         download_cache_file
       end
