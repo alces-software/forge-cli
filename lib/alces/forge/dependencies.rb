@@ -13,17 +13,17 @@ module Alces
 
           until to_resolve.empty?
             current = to_resolve.pop
-            puts "Resolving #{current.package_path}"
+            #puts "Resolving #{current.package_path}"
             to_install << current
 
             deps_metadata = current.dependencies.map { |dep|
               PackageMetadata.load_from_path(api, dep)
             }
-            puts "deps for #{current.id}: #{deps_metadata}"
+            #puts "deps for #{current.id}: #{deps_metadata}"
 
             # We want to install these dependencies and resolve any further dependencies they have
             to_resolve += deps_metadata.reject { |dep| resolved_ids.include?(dep.id) }
-            puts "to_resolve now #{to_resolve}"
+            #puts "to_resolve now #{to_resolve}"
 
             resolved_ids << current.id
 

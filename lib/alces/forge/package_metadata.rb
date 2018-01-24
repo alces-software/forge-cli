@@ -6,7 +6,6 @@ module Alces
   module Forge
     class PackageMetadata
       def self.load_from_api(api, user, package, version=nil)
-        puts "Load from API"
         params = {
             'filter[username]' => user,
             'filter[name]' => package,
