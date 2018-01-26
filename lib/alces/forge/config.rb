@@ -30,7 +30,7 @@ module Alces
         end
 
         def api_url
-          ENV['cw_FORGE_API_URL'] || config[:api_url] || 'https://api.forge.alces-flight.com/v1'
+          ENV['cw_FORGE_API_URL'] || config[:api_url] || 'https://forge-api.alces-flight.com/v1'
         end
 
         def sso_url
