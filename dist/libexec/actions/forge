@@ -1,6 +1,6 @@
 : '
-: NAME: Forge
-: SYNOPSIS: Build your compute environment, your way
+: NAME: forge
+: SYNOPSIS: Install cluster components and software
 : VERSION: 0.0.1
 : '
 #==============================================================================
