@@ -27,7 +27,7 @@ module Alces
           end
 
           results = api.get('search', params: params )
-          print_packages_list(results['packages'])
+          print_packages_list(results['packages'].sort_by { |package_id, package| [package['username'], package['name'], package['version']] } )
         end
 
         private
