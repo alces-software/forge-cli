@@ -6,30 +6,23 @@ module Alces
       class << self
 
         def resolve(api, metadata)
+          resolve_level(api, metadata)
+              .sort_by {|p| -p[:level]}
+              .map {|p| p[:package]}
+              .uniq { |p| p.id }
+        end
 
-          to_install = [ ]
-          to_resolve = [ metadata ]
-          resolved_ids = [ ]
+        private
 
-          until to_resolve.empty?
-            current = to_resolve.pop
-            #puts "Resolving #{current.package_path}"
-            to_install << current
+        def resolve_level(api, metadata, level=0)
 
-            deps_metadata = current.dependencies.map { |dep|
-              PackageMetadata.load_from_path(api, dep)
-            }
-            #puts "deps for #{current.id}: #{deps_metadata}"
+          deps_metadata = metadata.dependencies.map { |dep|
+            PackageMetadata.load_from_path(api, dep)
+          }
 
-            # We want to install these dependencies and resolve any further dependencies they have
-            to_resolve += deps_metadata.reject { |dep| resolved_ids.include?(dep.id) }
-            #puts "to_resolve now #{to_resolve}"
+          deps = deps_metadata.map { |dep| resolve_level(api, dep, level + 1)}
 
-            resolved_ids << current.id
-
-          end
-
-          to_install.reverse.uniq { |p| p.id }
+          deps.flatten << {level: level, package: metadata}
         end
 
       end
