@@ -75,9 +75,11 @@ module Alces
               end
             end
           end
+        rescue Errors::NoSuchPackageException
+            say "No package found for #{args[0]}"
         ensure
-          do_with_spinner 'Cleaning up' do
-            if package_files
+          if package_files
+            do_with_spinner 'Cleaning up' do
               package_files.each { |package_file|
                 package_file.clean_up unless package_file.nil?
               }
