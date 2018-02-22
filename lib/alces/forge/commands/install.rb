@@ -37,7 +37,8 @@ module Alces
 
           package_files = []
 
-          say "Installing for dependencies: #{to_install.reject { |p| (Registry.installed?(p) && !options.reinstall) || p == metadata }.map { |p| p.package_path }.join(', ')}"
+          dep_packages = to_install.reject { |p| (Registry.installed?(p) && !options.reinstall) || p == metadata }.map { |p| p.package_path }
+          say "Installing for dependencies: #{dep_packages.join(', ')}" unless dep_packages.empty?
 
           to_install.each do |candidate|
 
