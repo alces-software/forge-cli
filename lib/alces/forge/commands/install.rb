@@ -75,8 +75,8 @@ module Alces
               end
             end
           end
-        rescue Errors::NoSuchPackageException
-            say "No package found for #{args[0]}"
+        rescue Errors::NoSuchPackageException => e
+            say "No package found for #{e.message}"
         ensure
           if package_files
             do_with_spinner 'Cleaning up' do
