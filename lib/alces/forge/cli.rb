@@ -1,3 +1,4 @@
+require 'etc'
 require 'rubygems'
 require 'commander'
 require 'alces/forge/commands/install'
@@ -57,7 +58,7 @@ module Alces
       end
 
       def assert_environment
-        unless ENV['USER'] == 'root'
+        unless ENV['USER'] == 'root' || (!ENV.include?('USER') && Etc.getpwuid().uid == 0)
           raise 'This program should be run as root.'
         end
         unless ENV['cw_ROOT']
