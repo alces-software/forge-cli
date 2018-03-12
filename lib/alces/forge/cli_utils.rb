@@ -77,11 +77,29 @@ module Alces
         def shell(cmd, working_dir=nil)
           stdout, stderr, status = ::Open3.capture3({'BUNDLE_GEMFILE' => nil}, cmd, :chdir=>working_dir)
 
+          write_logs(working_dir, cmd, stdout, stderr)
+
           unless status.success?
             raise ShellException.new(stderr)
           end
           stdout
         end
+
+        def write_logs(wd, cmd, stdout, stderr)
+          unless File.directory?('/var/log/forge')
+            Dir.mkdir('/var/log/forge')
+          end
+
+          open('/var/log/forge/install.log', 'a') do |log|
+            log.write("#{DateTime.now} - running #{cmd} in #{wd}\n")
+            log.write("--- stdout ---\n")
+            log.write(stdout)
+            log.write("--- stderr ---\n")
+            log.write(stderr)
+            log.write("-- complete --\n")
+          end
+        end
+
       end
     end
   end
