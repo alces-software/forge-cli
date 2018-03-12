@@ -1,9 +1,14 @@
+require 'alces/forge/config'
 require 'alces/forge/errors'
 require 'json'
+require 'semantic'
 require 'zip'
 
 module Alces
   module Forge
+
+    PackagePath = Struct.new(:user, :package, :version)
+
     class PackageMetadata
       def self.load_from_api(api, user, package, version=nil)
         params = {
@@ -79,13 +84,40 @@ module Alces
       end
 
       def self.split_package_path(path)
-        match = /(?<user>[^\/]+)\/(?<package>[^\/]+)(\/(?<version>[^\/]+))?/.match(path)
+        format_check = /^[^\/ ]+(\/[^\/ ]+){0,2}$/.match(path)
+        raise 'Unrecognised package format. Please specify as [username/]packagename[/version]' unless format_check
 
-        raise 'Unrecognised package format. Please specify as username/packagename[/version]' unless match
+        split = path.split('/')
 
-        match
+        if split.length == 1
+          # Just a package name; assume user is the default, version is nil (== latest)
+          PackagePath.new(Config.default_user, split[0], nil)
+        elsif split.length == 2
+          # Could either be username/package or package/version, so let's try...
+          begin
+            Semantic::Version.new(split[1])
+            PackagePath.new(Config.default_user, split[0], split[1])
+          rescue
+            if split[1] == 'latest'
+              PackagePath.new(Config.default_user, split[0], nil)
+            else
+              PackagePath.new(split[0], split[1], nil)
+            end
+          end
+        elsif split.length == 3
+          # This one is easy but we should check the version number
+          begin
+            Semantic::Version.new(split[2])
+            PackagePath.new(split[0], split[1], split[2])
+          rescue
+            if split[2] == 'latest'
+              PackagePath.new(split[0], split[1], nil)
+            else
+              raise "'#{split[2]}' is not a valid version number."
+            end
+          end
+        end
       end
-
 
     end
   end

@@ -9,6 +9,7 @@ gem 'colorize'
 gem 'commander'
 gem 'http'
 gem 'rubyzip'
+gem 'semantic'
 
 group 'development' do
   gem 'rspec'

@@ -40,6 +40,7 @@ module Alces
         private
 
         DEFAULT_CONFIG = {
+            default_user: 'alces',
             package_cache_dir: '/opt/forge/var/cache/packages'
         }
 

@@ -24,7 +24,7 @@ module Alces
 
           metadata = get_package_metadata(args)
 
-          say "Found package: #{metadata.name.bold} version #{metadata.version.bold}"
+          say "Found package: " + "#{metadata.username}/#{metadata.name}".bold + " version #{metadata.version.bold}"
 
           if Registry.installed?(metadata) && !options.reinstall
             say 'Package is already installed! Use --reinstall to reinstall.'
