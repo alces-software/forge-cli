@@ -1,0 +1,15 @@
+################################################################################
+##
+## Alces Forge - Log rotation configuration
+## Copyright (c) 2018 Alces Software Ltd
+##
+################################################################################
+/var/log/forge/*.log
+{
+  daily
+  missingok
+  rotate 7
+  compress
+  delaycompress
+  notifempty
+}
