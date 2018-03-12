@@ -75,7 +75,7 @@ module Alces
         end
 
         def shell(cmd, working_dir=nil)
-          stdout, stderr, status = ::Open3.capture3({'BUNDLE_GEMFILE' => nil}, cmd, :chdir=>working_dir)
+          stdout, stderr, status = ::Open3.capture3(shell_env, cmd, :chdir=>working_dir)
 
           write_logs(working_dir, cmd, stdout, stderr)
 
@@ -83,6 +83,13 @@ module Alces
             raise ShellException.new(stderr)
           end
           stdout
+        end
+
+        def shell_env
+          {
+              'BUNDLE_GEMFILE' => nil,
+              'cw_UI_disable_spinner' => 'true'
+          }
         end
 
         def write_logs(wd, cmd, stdout, stderr)
