@@ -28,6 +28,8 @@ module Alces
           c.action Alces::Forge::Commands::Search, :search
         end
 
+        alias_command :s, :search
+
         command :install do |c|
           c.syntax = 'forge install [options] user/package[/version]'
           c.summary = 'Install a Forge package'
@@ -39,6 +41,11 @@ module Alces
           c.option '--reinstall', 'Reinstall package if it is already installed'
           c.action Alces::Forge::Commands::Install, :install
         end
+
+        alias_command :i, :install
+        alias_command :in, :install
+        alias_command :ins, :install
+        alias_command :inst, :install
 
         command :login do |c|
           c.syntax = 'forge login'
