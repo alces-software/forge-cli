@@ -39,11 +39,21 @@ module Alces
         end
 
         def print_package(package)
-          puts "#{package['username']}/#{package['name'].bold}/#{package['version']} [#{categories_to_string(package)}]"
+          print_string = "#{package['username']}/#{package['name']}".bold
+          print_string += "/#{package['version']}"
+          print_string += categories_to_string(package)
+          puts print_string
         end
 
         def categories_to_string(package)
-          package['categories'].reverse.map { |c| coloured(c['name']) }.join(' > ')
+          # We don't want to display 'Uncategorised' as a category.
+          displayable_categories = package['categories'].reject { |c| c['name'] == 'Uncategorised'}
+          if displayable_categories.empty?
+            ''
+          else
+            # Reversing gets us the list of categories starting with the oldest grandparent.
+            "[#{displayable_categories.reverse.map { |c| coloured(c['name']) }.join(' > ') }]"
+          end
         end
 
         def coloured(category)
