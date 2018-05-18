@@ -75,14 +75,16 @@ module Alces
         end
 
         def shell(cmd, working_dir=nil)
-          stdout, stderr, status = ::Open3.capture3(shell_env, cmd, :chdir=>working_dir)
+          Bundler.with_clean_env do
+            stdout, stderr, status = ::Open3.capture3(shell_env, cmd, :chdir=>working_dir)
 
-          write_logs(working_dir, cmd, stdout, stderr)
+            write_logs(working_dir, cmd, stdout, stderr)
 
-          unless status.success?
-            raise ShellException.new(stderr)
+            unless status.success?
+              raise ShellException.new(stderr)
+            end
+            stdout
           end
-          stdout
         end
 
         def shell_env
