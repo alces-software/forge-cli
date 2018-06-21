@@ -41,7 +41,7 @@ module Alces
 
         DEFAULT_CONFIG = {
             default_user: 'alces',
-            package_cache_dir: '/opt/forge/var/cache/packages'
+            package_cache_dir: "#{ENV['cw_ROOT']}/var/forge/cache/packages"
         }
 
         CONFIG_DIRECTORY = "#{ENV['cw_ROOT']}/etc/forge"

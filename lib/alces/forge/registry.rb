@@ -8,11 +8,9 @@ module Alces
       # The registry records packages that have been selected for installation, either on the master node or compute nodes
       # (or both); and also packages that have actually been installed on the local node.
 
-      MASTER_REGISTRY_DIR = '/opt/forge/var/lib'
-      MASTER_REGISTRY_PATH = File.join(MASTER_REGISTRY_DIR, 'registry.yml')
-
-      LOCAL_REGISTRY_DIR = "#{ENV['cw_ROOT']}/etc/forge"
-      LOCAL_REGISTRY_PATH = File.join(LOCAL_REGISTRY_DIR, 'local.yml')
+      REGISTRY_DIR = "#{ENV['cw_ROOT']}/var/forge/registers"
+      MASTER_REGISTRY_PATH = File.join(REGISTRY_DIR, 'master.yml')
+      LOCAL_REGISTRY_PATH = File.join(REGISTRY_DIR, 'local.yml')
 
       DEFAULT_LOCAL_REGISTRY = {packages: [] }
       DEFAULT_MASTER_REGISTRY = {master: [], compute: []}
@@ -63,24 +61,21 @@ module Alces
         end
 
         def save_local
-          save(LOCAL_REGISTRY_DIR, LOCAL_REGISTRY_PATH, local.to_yaml)
+          save(LOCAL_REGISTRY_PATH, local.to_yaml)
         end
 
         def save_master
-          save(MASTER_REGISTRY_DIR, MASTER_REGISTRY_PATH, master.to_yaml)
+          save(MASTER_REGISTRY_PATH, master.to_yaml)
         end
 
-        def save(dir, path, data)
+        def save(path, data)
+          dir = File.dirname(path)
           unless Dir.exists?(dir)
             FileUtils.mkdir_p(dir)
           end
           File.write(path, data)
         end
-
-
-
       end
-
     end
   end
 end
