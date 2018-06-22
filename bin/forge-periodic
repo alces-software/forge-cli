@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
-ENV['BUNDLE_GEMFILE'] ||= "#{ENV['cw_ROOT']}/opt/forge/Gemfile"
-$: << "#{ENV['cw_ROOT']}/opt/forge/lib"
+ENV['BUNDLE_GEMFILE'] ||= "#{ENV['FLIGHT_DIRECT_ROOT']}/opt/forge/Gemfile"
+$: << "#{ENV['FLIGHT_DIRECT_ROOT']}/opt/forge/lib"
 
 require 'bundler/setup'
 require 'alces/forge/tasks/install_marked_packages'

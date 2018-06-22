@@ -8,7 +8,7 @@ module Alces
       # The registry records packages that have been selected for installation, either on the master node or compute nodes
       # (or both); and also packages that have actually been installed on the local node.
 
-      REGISTRY_DIR = "#{ENV['cw_ROOT']}/var/forge/registers"
+      REGISTRY_DIR = "#{ENV['FLIGHT_DIRECT_ROOT']}/var/forge/registers"
       MASTER_REGISTRY_PATH = File.join(REGISTRY_DIR, 'master.yml')
       LOCAL_REGISTRY_PATH = File.join(REGISTRY_DIR, 'local.yml')
 
