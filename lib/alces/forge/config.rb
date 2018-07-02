@@ -30,7 +30,7 @@ module Alces
         end
 
         def api_url
-          ENV['cw_FORGE_API_URL'] || config[:api_url] || 'https://api.forge.alces-flight.com/v1'
+          ENV['cw_FORGE_API_URL'] || config[:api_url] || 'https://forge-api.alces-flight.com/v1'
         end
 
         def sso_url
@@ -40,10 +40,11 @@ module Alces
         private
 
         DEFAULT_CONFIG = {
-            package_cache_dir: '/opt/forge/var/cache/packages'
+            default_user: 'alces',
+            package_cache_dir: "#{ENV['FLIGHT_DIRECT_ROOT']}/var/forge/cache/packages"
         }
 
-        CONFIG_DIRECTORY = "#{ENV['cw_ROOT']}/etc/forge"
+        CONFIG_DIRECTORY = "#{ENV['FLIGHT_DIRECT_ROOT']}/etc/forge"
         CONFIG_FILE_PATH = "#{CONFIG_DIRECTORY}/config.yml"
 
         def config

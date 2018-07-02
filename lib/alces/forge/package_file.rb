@@ -1,6 +1,11 @@
 require 'alces/forge/cli_utils'
 require 'forwardable'
 
+# Hack required to make Addresable/HTTP generate over-encoded addresses required by AWS
+require 'addressable/uri'
+Addressable::URI::CharacterClasses::PCHAR.gsub!("\\+", "")
+require 'http'
+
 module Alces
   module Forge
     class PackageFile
@@ -9,7 +14,11 @@ module Alces
       def_delegators CLIUtils, :shell
 
       def self.for(metadata)
-        new(metadata)
+        new(metadata, nil)
+      end
+
+      def self.for_local(metadata, file)
+        new(metadata, file)
       end
 
       def cached?
@@ -26,13 +35,25 @@ module Alces
           FileUtils.mkdir_p(dl_target_dir)
         end
 
-        target = File.open(download_cache_file, 'wb')
-        body = HTTP.get(@metadata.packageUrl).body
-        while (part = body.readpartial) do
-          target.write(part)
+        if @local_file
+          FileUtils.cp(@local_file, download_cache_file)
+        elsif !@metadata.local_file?
+
+          resp = HTTP.headers(
+              user_agent: 'Forge-CLI/0.0.1'
+          ).get(@metadata.packageUrl)
+
+
+          raise Exception.new("Download unsuccessful: #{resp.status}") unless resp.status.success?
+
+          body = resp.body
+          File.open(download_cache_file, 'wb') do |target|
+            while (part = body.readpartial) do
+              target.write(part)
+            end
+          end
         end
-        target.close
-        target.path
+        download_cache_file
       end
 
       def extract
@@ -60,8 +81,9 @@ module Alces
 
       private
 
-      def initialize(metadata)
+      def initialize(metadata, local_file)
         @metadata = metadata
+        @local_file = local_file
       end
 
       def download_cache_path

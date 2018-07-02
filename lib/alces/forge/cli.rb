@@ -1,3 +1,4 @@
+require 'etc'
 require 'rubygems'
 require 'commander'
 require 'alces/forge/commands/install'
@@ -14,8 +15,6 @@ module Alces
         program :version, '0.0.1'
         program :description, 'Alces Flight Forge CLI'
 
-        assert_environment
-
         command :search do |c|
           c.syntax = 'forge search [options] searchterm'
           c.summary = 'Search for packages on Forge'
@@ -26,6 +25,8 @@ module Alces
           c.option '--config', 'Only show configuration packages'
           c.action Alces::Forge::Commands::Search, :search
         end
+
+        alias_command :s, :search
 
         command :install do |c|
           c.syntax = 'forge install [options] user/package[/version]'
@@ -38,6 +39,11 @@ module Alces
           c.option '--reinstall', 'Reinstall package if it is already installed'
           c.action Alces::Forge::Commands::Install, :install
         end
+
+        alias_command :i, :install
+        alias_command :in, :install
+        alias_command :ins, :install
+        alias_command :inst, :install
 
         command :login do |c|
           c.syntax = 'forge login'
@@ -55,16 +61,6 @@ module Alces
 
         run!
       end
-
-      def assert_environment
-        unless ENV['USER'] == 'root'
-          raise 'This program should be run as root.'
-        end
-        unless ENV['cw_ROOT']
-          raise 'This program should be run in a Clusterware environment e.g. through running `alces forge`.'
-        end
-      end
-
     end
   end
 end
