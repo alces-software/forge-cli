@@ -4,6 +4,7 @@ require 'open3'
 module Alces
   module Forge
     module CLIUtils
+      LOG_FILE = File.join(ENV['FLIGHT_DIRECT_ROOT'], 'var/log/forge.log')
 
       class ShellException < RuntimeError
       end
@@ -95,11 +96,8 @@ module Alces
         end
 
         def write_logs(wd, cmd, stdout, stderr)
-          unless File.directory?('/var/log/forge')
-            Dir.mkdir('/var/log/forge')
-          end
-
-          open('/var/log/forge/install.log', 'a') do |log|
+          FileUtils.mkdir_p File.dirname(LOG_FILE)
+          open(LOG_FILE, 'a') do |log|
             log.write("#{DateTime.now} - running #{cmd} in #{wd}\n")
             log.write("--- stdout ---\n")
             log.write(stdout)
@@ -108,7 +106,6 @@ module Alces
             log.write("-- complete --\n")
           end
         end
-
       end
     end
   end
