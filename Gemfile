@@ -13,4 +13,6 @@ gem 'semantic'
 
 group 'development' do
   gem 'rspec'
+  gem 'pry'
+  gem 'pry-byebug'
 end

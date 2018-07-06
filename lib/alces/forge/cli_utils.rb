@@ -28,7 +28,7 @@ module Alces
         end
 
         def with_spinner(&block)
-          if !tty?
+          if !tty? || ENV['FLIGHT_DIRECT_NO_SPINNER']
             block.call
           else
             begin
