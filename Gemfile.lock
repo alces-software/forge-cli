@@ -3,6 +3,8 @@ GEM
   specs:
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
+    byebug (10.0.2)
+    coderay (1.1.2)
     colorize (0.8.1)
     commander (4.4.3)
       highline (~> 1.7.2)
@@ -19,6 +21,13 @@ GEM
       domain_name (~> 0.5)
     http-form_data (2.0.0)
     http_parser.rb (0.6.0)
+    method_source (0.9.0)
+    pry (0.11.3)
+      coderay (~> 1.1.0)
+      method_source (~> 0.9.0)
+    pry-byebug (3.6.0)
+      byebug (~> 10.0)
+      pry (~> 0.10)
     public_suffix (3.0.1)
     rspec (3.7.0)
       rspec-core (~> 3.7.0)
@@ -46,9 +55,11 @@ DEPENDENCIES
   colorize
   commander
   http
+  pry
+  pry-byebug
   rspec
   rubyzip
   semantic
 
 BUNDLED WITH
-   1.15.1
+   1.16.2
