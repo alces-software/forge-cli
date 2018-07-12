@@ -82,7 +82,17 @@ module Alces
             write_logs(working_dir, cmd, stdout, stderr)
 
             unless status.success?
-              raise ShellException.new(stderr)
+              raise ShellException.new <<-EOF
+The following command exited with status: #{status}
+cd #{working_dir} && #{cmd}
+---------------------------------------------------
+STDOUT:
+#{stdout}
+---------------------------------------------------
+STDERR:
+#{stderr}
+---------------------------------------------------
+EOF
             end
             stdout
           end
