@@ -41,10 +41,10 @@ module Alces
 
         DEFAULT_CONFIG = {
             default_user: 'alces',
-            package_cache_dir: "#{ENV['FLIGHT_DIRECT_ROOT']}/var/forge/cache/packages"
+            package_cache_dir: "#{ENV['FL_ROOT']}/var/forge/cache/packages"
         }
 
-        CONFIG_DIRECTORY = "#{ENV['FLIGHT_DIRECT_ROOT']}/etc/forge"
+        CONFIG_DIRECTORY = "#{ENV['FL_ROOT']}/etc/forge"
         CONFIG_FILE_PATH = "#{CONFIG_DIRECTORY}/config.yml"
 
         def config
