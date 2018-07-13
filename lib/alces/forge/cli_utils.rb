@@ -4,7 +4,7 @@ require 'open3'
 module Alces
   module Forge
     module CLIUtils
-      LOG_FILE = File.join(ENV['FLIGHT_DIRECT_ROOT'], 'var/log/forge.log')
+      LOG_FILE = File.join(ENV['FL_ROOT'], 'var/log/forge.log')
 
       class ShellException < RuntimeError
       end
@@ -28,7 +28,7 @@ module Alces
         end
 
         def with_spinner(&block)
-          if !tty? || ENV['FLIGHT_DIRECT_NO_SPINNER']
+          if !tty? || ENV['FL_NO_SPINNER']
             block.call
           else
             begin

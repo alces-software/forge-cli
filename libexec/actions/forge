@@ -26,6 +26,6 @@
 #==============================================================================
 # vim: set filetype=sh :
 
-forge_dir=$FLIGHT_DIRECT_ROOT/opt/forge
+forge_dir=$FL_ROOT/opt/forge
 cd $forge_dir && bin/forge "$@"
 
