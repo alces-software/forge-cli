@@ -89,7 +89,8 @@ module Alces
       end
 
       def download_cache_path
-        File.join(Config.package_cache_dir, @metadata.username, @metadata.name)
+        username = @metadata.username || 'Unknown Package'
+        File.join(Config.package_cache_dir, username, @metadata.name)
       end
 
       def download_cache_file
