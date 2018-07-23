@@ -30,11 +30,11 @@ module Alces
         end
 
         def api_url
-          ENV['FL_CONFIG_FORGE_API_URL'] || ENV['cw_FORGE_API_URL'] || config[:api_url] || 'https://forge-api.alces-flight.com/v1'
+          File.join(ENV['FL_CONFIG_CACHE_URL'], 'v1') || ENV['cw_FORGE_API_URL'] || config[:api_url] || 'https://forge-api.alces-flight.com'
         end
 
         def sso_url
-          ENV['FL_CONFIG_FORGE_SSO_URL'] || ENV['cw_FORGE_SSO_URL'] || config[:sso_url] || 'https://accounts.alces-flight.com'
+          ENV['cw_FORGE_SSO_URL'] || config[:sso_url] || 'https://accounts.alces-flight.com'
         end
 
         private
