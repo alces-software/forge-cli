@@ -1,7 +1,6 @@
 : '
-: NAME: forge
 : SYNOPSIS: Install packages to Flight Direct
-: VERSION: 1.0.0
+: ROOT: true
 : '
 #==============================================================================
 # Copyright (C) 2018 Stephen F. Norledge and Alces Software Ltd.
