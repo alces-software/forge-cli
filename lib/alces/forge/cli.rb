@@ -12,7 +12,7 @@ module Alces
 
       def run
         program :name, 'forge'
-        program :version, '0.1.3'
+        program :version, '0.1.4'
         program :description, 'Alces Flight Forge CLI'
 
         command :search do |c|
