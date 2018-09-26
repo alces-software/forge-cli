@@ -33,7 +33,7 @@ module Alces
           if ENV['FL_CONFIG_CACHE_URL']
             File.join(ENV['FL_CONFIG_CACHE_URL'], 'v1')
           else
-            ENV['cw_FORGE_API_URL'] || config[:api_url] || 'https://forge-api.alces-flight.com'
+            ENV['cw_FORGE_API_URL'] || config[:api_url] || 'https://forge-api.alces-flight.com/v1/'
           end
         end
 
