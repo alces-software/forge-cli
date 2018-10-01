@@ -22,3 +22,12 @@ https://github.com/alces-software/flight-direct
 1. Install the required gems: `bundle install`
 1. Then run the forge-cli directly: `bin/forge`
 
+## Releasing with Flight Direct
+
+Flight Direct uses an Omnibus software config to build forge into its CLI.
+To update the `forge` version in `flight`:
+1. Bump the version number in `lib/alces/forge/cli.rb`
+2. Create a GitHub tag of the new version of `forge-cli`
+3. Update the default version in flight-direct `config/software/forge.rb`
+4. Rebuild flight direct (refer to its repo for details)
+

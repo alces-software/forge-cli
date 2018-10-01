@@ -4,6 +4,8 @@ require 'yaml'
 module Alces
   module Forge
     class Config
+      API_VERSION = 'v1'
+
       include Singleton
 
       class << self
@@ -30,11 +32,11 @@ module Alces
         end
 
         def api_url
-          if ENV['FL_CONFIG_CACHE_URL']
-            File.join(ENV['FL_CONFIG_CACHE_URL'], 'v1')
-          else
-            ENV['cw_FORGE_API_URL'] || config[:api_url] || 'https://forge-api.alces-flight.com'
-          end
+          base = ENV['FL_CONFIG_CACHE_URL'] || \
+                 ENV['cw_FORGE_API_URL'] || \
+                 config[:api_url] || \
+                 'https://forge-api.alces-flight.com/'
+          File.join(base, API_VERSION)
         end
 
         def sso_url
