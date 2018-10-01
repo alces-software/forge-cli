@@ -26,7 +26,8 @@ https://github.com/alces-software/flight-direct
 
 Flight Direct uses an Omnibus software config to build forge into its CLI.
 To update the `forge` version in `flight`:
-1. Create a GitHub tag of the new version of `forge-cli`
-2. Update the default version in flight-direct `config/software/forge.rb`
-3. Rebuild flight direct (refer to its repo for details)
+1. Bump the version number in `lib/alces/forge/cli.rb`
+2. Create a GitHub tag of the new version of `forge-cli`
+3. Update the default version in flight-direct `config/software/forge.rb`
+4. Rebuild flight direct (refer to its repo for details)
 
