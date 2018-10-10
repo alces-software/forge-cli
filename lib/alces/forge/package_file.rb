@@ -72,7 +72,11 @@ module Alces
         File.chmod(0700, File.join(@extracted_dir, 'install.sh'))
         # Strictly enforce all install scripts commands exiting with 0
         # This can be manually turned off in the script with `set +e`
-        shell('set -e; source ./install.sh', @extracted_dir)
+        cmd = <<-COMMAND
+set -e
+source ./install.sh
+COMMAND
+        shell(cmd, @extracted_dir)
       end
 
       def clean_up
