@@ -90,9 +90,16 @@ COMMAND
         @local_file = local_file
       end
 
+      def username
+        @metadata.username || 'unknown-user'
+      end
+
+      def name
+        @metadata.name || (raise 'Missing package name')
+      end
+
       def download_cache_path
-        username = @metadata.username || 'Unknown Package'
-        File.join(Config.package_cache_dir, username, @metadata.name)
+        File.join(Config.package_cache_dir, username, name)
       end
 
       def download_cache_file
