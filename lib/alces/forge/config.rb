@@ -45,13 +45,16 @@ module Alces
 
         private
 
+        DATA_ROOT = (ENV['FL_ROOT'] || ENV['cw_ROOT'] || '/')
+        CONFIG_DIRECTORY = File.join(DATA_ROOT, 'etc/forge')
+        CONFIG_FILE_PATH = File.join(CONFIG_DIRECTORY, 'config.yml')
+
         DEFAULT_CONFIG = {
             default_user: 'alces',
-            package_cache_dir: "#{ENV['FL_ROOT']}/var/forge/cache/packages"
+            package_cache_dir: File.join(DATA_ROOT,
+                                         'var/forge/cache/packages'),
+            install_config_dir: File.join(CONFIG_DIRECTORY, 'install')
         }
-
-        CONFIG_DIRECTORY = "#{ENV['FL_ROOT']}/etc/forge"
-        CONFIG_FILE_PATH = "#{CONFIG_DIRECTORY}/config.yml"
 
         def config
           @config ||= DEFAULT_CONFIG.dup.tap { |cfg|
