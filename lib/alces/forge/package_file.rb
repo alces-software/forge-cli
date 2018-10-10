@@ -98,6 +98,10 @@ COMMAND
         @metadata.name || (raise 'Missing package name')
       end
 
+      def install_config_path
+        File.join(Config.install_config_dir, username, name)
+      end
+
       def download_cache_path
         File.join(Config.package_cache_dir, username, name)
       end

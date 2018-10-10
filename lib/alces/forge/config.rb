@@ -53,7 +53,7 @@ module Alces
             default_user: 'alces',
             package_cache_dir: File.join(DATA_ROOT,
                                          'var/forge/cache/packages'),
-            install_configs: File.join(CONFIG_DIRECTORY, 'install')
+            install_config_dir: File.join(CONFIG_DIRECTORY, 'install')
         }
 
         def config
