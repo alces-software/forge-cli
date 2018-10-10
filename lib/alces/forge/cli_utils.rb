@@ -82,9 +82,10 @@ module Alces
             write_logs(working_dir, cmd, stdout, stderr)
 
             unless status.success?
+              cmd_seperator = (cmd.include?("\n") ? "\n" : ' && ')
               raise ShellException.new <<-EOF
 The following command exited with status: #{status}
-cd #{working_dir} && #{cmd}
+cd #{working_dir}#{cmd_seperator}#{cmd}
 ---------------------------------------------------
 STDOUT:
 #{stdout}
