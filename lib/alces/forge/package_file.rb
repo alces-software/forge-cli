@@ -104,7 +104,7 @@ COMMAND
       end
 
       def install_config_path
-        File.join(Config.install_config_dir, username, name)
+        File.join(Config.install_config_dir, username, name + '.rc')
       end
 
       def download_cache_path
