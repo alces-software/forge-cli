@@ -45,7 +45,7 @@ module Alces
 
         private
 
-        DATA_ROOT = (ENV['FL_ROOT'] || ENV['cw_ROOT'])
+        DATA_ROOT = (ENV['FL_ROOT'] || ENV['cw_ROOT'] || '/')
 
         DEFAULT_CONFIG = {
             default_user: 'alces',
