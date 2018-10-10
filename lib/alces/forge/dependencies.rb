@@ -6,21 +6,22 @@ module Alces
       class << self
 
         def resolve(api, metadata)
-          resolve_level(api, metadata)
-              .sort_by {|p| -p[:level]}
-              .map {|p| p[:package]}
-              .uniq { |p| p.id }
+          resolve_level(api, metadata).sort_by {|p| -p[:level]}
+                                      .map {|p| p[:package]}
+                                      .uniq { |p| p.id }
         end
 
         private
 
         def resolve_level(api, metadata, level=0)
 
-          deps_metadata = metadata.dependencies.map { |dep|
+          deps_metadata = metadata.dependencies.map do |dep|
             PackageMetadata.load_from_path(api, dep)
-          }
+          end
 
-          deps = deps_metadata.map { |dep| resolve_level(api, dep, level + 1)}
+          deps = deps_metadata.map do |dep|
+            resolve_level(api, dep, level + 1)
+          end
 
           deps.flatten << {level: level, package: metadata}
         end
