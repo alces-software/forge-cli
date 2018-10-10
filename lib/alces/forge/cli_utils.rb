@@ -84,7 +84,11 @@ module Alces
             unless status.success?
               cmd_seperator = (cmd.include?("\n") ? "\n" : ' && ')
               raise ShellException.new <<-EOF
-The following command exited with status: #{status}
+The following shell command exited with a non-zero status
+PID: #{status.pid}
+STATUS: #{status.exitstatus}
+---------------------------------------------------
+COMMAND:
 cd #{working_dir}#{cmd_seperator}#{cmd}
 ---------------------------------------------------
 STDOUT:
