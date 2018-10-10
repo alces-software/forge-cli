@@ -33,13 +33,16 @@ module Alces
 
           to_install = do_with_spinner 'Resolving dependencies' do
             Dependencies.resolve(api, metadata)
+                        .select do |package|
+                          next true if options.reinstall
+                          !Registry.installed?(package)
+                        end
           end
 
           package_files = []
 
-          dep_packages = to_install.reject do |p|
-            (Registry.installed?(p) && !options.reinstall) || p == metadata
-          end.map { |p| p.package_path }
+          dep_packages = to_install.reject(&:last?)
+                                   .map { |p| p.package_path }
           say "Installing for dependencies: #{dep_packages.join(', ')}" unless dep_packages.empty?
 
           to_install.each do |candidate|
