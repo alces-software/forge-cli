@@ -76,6 +76,9 @@ if [ -f "#{install_config_path}" ]; then
   set -a
   source #{install_config_path}
   set +a
+  echo 'Sourced Config: #{install_config_path}'
+else
+  echo 'No Config: #{install_config_path}'
 fi
 source ./install.sh
 COMMAND
