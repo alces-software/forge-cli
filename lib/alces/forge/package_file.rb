@@ -70,8 +70,6 @@ module Alces
         extract unless @extracted_dir && Dir.exists?(@extracted_dir)
 
         File.chmod(0700, File.join(@extracted_dir, 'install.sh'))
-        # Strictly enforce all install scripts commands exiting with 0
-        # This can be manually turned off in the script with `set +e`
         cmd = <<-COMMAND
 set -e
 source ./install.sh
