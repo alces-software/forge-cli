@@ -49,11 +49,12 @@ module Alces
 
         DEFAULT_CONFIG = {
             default_user: 'alces',
-            package_cache_dir: "#{DATA_ROOT}/var/forge/cache/packages"
+            package_cache_dir: File.join(DATA_ROOT,
+                                         'var/forge/cache/packages')
         }
 
-        CONFIG_DIRECTORY = "#{DATA_ROOT}/etc/forge"
-        CONFIG_FILE_PATH = "#{CONFIG_DIRECTORY}/config.yml"
+        CONFIG_DIRECTORY = File.join(DATA_ROOT, 'etc/forge')
+        CONFIG_FILE_PATH = File.join(CONFIG_DIRECTORY, 'config.yml')
 
         def config
           @config ||= DEFAULT_CONFIG.dup.tap { |cfg|
