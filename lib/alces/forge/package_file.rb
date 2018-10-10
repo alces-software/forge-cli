@@ -72,6 +72,11 @@ module Alces
         File.chmod(0700, File.join(@extracted_dir, 'install.sh'))
         cmd = <<-COMMAND
 set -e
+if [ -f "#{install_config_path}" ]; then
+  set -a
+  source #{install_config_path}
+  set +a
+fi
 source ./install.sh
 COMMAND
         shell(cmd, @extracted_dir)
