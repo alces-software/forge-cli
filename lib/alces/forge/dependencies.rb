@@ -16,9 +16,9 @@ module Alces
 
         def resolve_level(api, metadata, level=0)
 
-          deps_metadata = metadata.dependencies.map do |dep|
-            package = Registry.installed_version(dep)
-            package ||= PackageMetadata.load_from_path(api, dep)
+          deps_metadata = metadata.dependencies.map do |raw_dep|
+            dep = Registry.installed_version(raw_dep) || raw_dep
+            PackageMetadata.load_from_path(api, dep)
           end
 
           deps = deps_metadata.map do |dep|

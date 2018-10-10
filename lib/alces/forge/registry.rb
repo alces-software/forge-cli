@@ -26,6 +26,9 @@ module Alces
         end
 
         def installed_version(package_name)
+          installed_packages.find do |candidate|
+            /#{package_name}\/*/.match?(candidate)
+          end
         end
 
         def set_installed(metadata)
