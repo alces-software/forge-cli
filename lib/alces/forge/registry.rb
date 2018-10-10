@@ -25,6 +25,9 @@ module Alces
           installed_packages.include?(metadata.package_path)
         end
 
+        def installed_version(package_name)
+        end
+
         def set_installed(metadata)
           unless installed_packages.include?(metadata.package_path)
             installed_packages << metadata.package_path
