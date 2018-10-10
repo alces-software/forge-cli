@@ -70,9 +70,19 @@ module Alces
         extract unless @extracted_dir && Dir.exists?(@extracted_dir)
 
         File.chmod(0700, File.join(@extracted_dir, 'install.sh'))
-        # Strictly enforce all install scripts commands exiting with 0
-        # This can be manually turned off in the script with `set +e`
-        shell('set -e; source ./install.sh', @extracted_dir)
+        cmd = <<-COMMAND
+set -e
+if [ -f "#{install_config_path}" ]; then
+  set -a
+  source #{install_config_path}
+  set +a
+  echo 'Sourced Config: #{install_config_path}'
+else
+  echo 'No Config: #{install_config_path}'
+fi
+source ./install.sh
+COMMAND
+        shell(cmd, @extracted_dir)
       end
 
       def clean_up
@@ -88,9 +98,20 @@ module Alces
         @local_file = local_file
       end
 
+      def username
+        @metadata.username || 'unknown-user'
+      end
+
+      def name
+        @metadata.name || (raise 'Missing package name')
+      end
+
+      def install_config_path
+        File.join(Config.install_config_dir, username, name + '.rc')
+      end
+
       def download_cache_path
-        username = @metadata.username || 'Unknown Package'
-        File.join(Config.package_cache_dir, username, @metadata.name)
+        File.join(Config.package_cache_dir, username, name)
       end
 
       def download_cache_file
