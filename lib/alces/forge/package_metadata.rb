@@ -65,8 +65,8 @@ module Alces
         end
       end
 
-      def package_path
-        "#{username}/#{name}/#{version}"
+      def package_path(include_version: true)
+        "#{username}/#{name}#{'/' + version if include_version}"
       end
 
       def id

@@ -25,11 +25,15 @@ module Alces
           installed_packages.include?(metadata.package_path)
         end
 
+        def installed_version(package_name)
+          installed_packages.find(&match_proc(package_name))
+        end
+
         def set_installed(metadata)
-          unless installed_packages.include?(metadata.package_path)
-            installed_packages << metadata.package_path
-            save_local
-          end
+          package_name = metadata.package_path(include_version: false)
+          installed_packages.reject!(&match_proc(package_name))
+          installed_packages << metadata.package_path
+          save_local
         end
 
         def marked_packages(node_type)
@@ -47,6 +51,12 @@ module Alces
         end
 
         private
+
+        def match_proc(package_name)
+          Proc.new do |candidate|
+            /#{package_name}\/*/.match?(candidate)
+          end
+        end
 
         def master
           @master ||= load(MASTER_REGISTRY_PATH, DEFAULT_MASTER_REGISTRY)

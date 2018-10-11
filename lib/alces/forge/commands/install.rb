@@ -33,46 +33,47 @@ module Alces
 
           to_install = do_with_spinner 'Resolving dependencies' do
             Dependencies.resolve(api, metadata)
+                        .select do |package|
+                          next true if options.reinstall
+                          !Registry.installed?(package)
+                        end
           end
 
           package_files = []
 
-          dep_packages = to_install.reject { |p| (Registry.installed?(p) && !options.reinstall) || p == metadata }.map { |p| p.package_path }
+          dep_packages = to_install.reject(&:last?)
+                                   .map { |p| p.package_path }
           say "Installing for dependencies: #{dep_packages.join(', ')}" unless dep_packages.empty?
 
           to_install.each do |candidate|
+            package_file = do_with_spinner "Downloading #{candidate.package_path}" do
+              PackageFile.for(candidate).tap { |pf|
+                package_files << pf
+                # We ensure the package file is downloaded and cached regardless of whether we are about to use it
+                # immediately to install onto the master node.
+                unless pf.cached? && !options.reinstall
+                  pf.download
+                end
+              }
+            end
 
-            if !Registry.installed?(candidate) || options.reinstall
+            if should_install_on_compute_nodes(options)
+              Registry.mark(candidate, :compute)
+              say 'Package marked for installation on compute nodes.'
+            end
 
-              package_file = do_with_spinner "Downloading #{candidate.package_path}" do
-                PackageFile.for(candidate).tap { |pf|
-                  package_files << pf
-                  # We ensure the package file is downloaded and cached regardless of whether we are about to use it
-                  # immediately to install onto the master node.
-                  unless pf.cached? && !options.reinstall
-                    pf.download
-                  end
-                }
+            if should_install_here(options)
+              Registry.mark(candidate, :master)
+
+              do_with_spinner "Extracting #{candidate.package_path}" do
+                package_file.extract
               end
 
-              if should_install_on_compute_nodes(options)
-                Registry.mark(candidate, :compute)
-                say 'Package marked for installation on compute nodes.'
+              do_with_spinner "Installing #{candidate.package_path}" do
+                package_file.install
               end
 
-              if should_install_here(options)
-                Registry.mark(candidate, :master)
-
-                  do_with_spinner "Extracting #{candidate.package_path}" do
-                    package_file.extract
-                  end
-
-                  do_with_spinner "Installing #{candidate.package_path}" do
-                    package_file.install
-                  end
-
-                  Registry.set_installed(candidate)
-              end
+              Registry.set_installed(candidate)
             end
           end
         rescue Errors::NoSuchPackageException => e
